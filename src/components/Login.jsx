@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { ErrorModal } from './error/ErrorModal';
-
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../style/login.css';
@@ -13,12 +11,14 @@ export const Login = () => {
     const [password, setPassword] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [typeError, setTypeError] = useState('');
 
 
-    const validateFields = () => {
+    const validateFields = (message_error, type_error) => {
         if (!email || !password) {
-            setErrorMessage('Both fields are required.');
+            setErrorMessage(message_error);
             setShowModal(true);
+            setTypeError(type_error);
             return false;
         }
 
@@ -30,7 +30,7 @@ export const Login = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (!validateFields()) {
+        if (!validateFields("Campos vacios, favor revisar e intentar nuevamente.", "error")) {
             return;
         }
 
@@ -52,10 +52,29 @@ export const Login = () => {
 
         fetch(`${import.meta.env.VITE_API_URL}login-drf`, requestOptions)
         .then(response => response.text())
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error));
-    };
+        .then(result => {
+            const resultJson = JSON.parse(result);
+            console.log(resultJson)
 
+            if (resultJson.error) {
+                setErrorMessage(resultJson.error);
+                setShowModal(true);
+                setTypeError("error");
+                return;
+            }else{
+                localStorage.setItem('token', resultJson.token);
+                setErrorMessage(resultJson.message);
+                setShowModal(true);
+                setTypeError("success");
+                return;
+            }
+        })
+        .catch(error => {
+            if (!validateFields(error, "error")) {
+                return;
+            }
+        });
+    };
 
     return (
         <>
