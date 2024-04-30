@@ -1,12 +1,12 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import Login from './Login';
-import Dashboard from './Dashboard'; // Asegúrate de importar tu componente Dashboard
+import Login from './src/components/Login';
+import Base from './src/pages/Base'; 
 
 const App = () => (
     <Switch>
         <Route path="/login" component={Login} />
-        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/base" component={Base} />
         {/* ... otras rutas ... */}
     </Switch>
 );
